@@ -1,4 +1,4 @@
-# Inteligentny System Zarządzania Klasopracownią
+# Inteligentny System Zarządzania Salą Lekcyjną
 
 Założone cele:
 Pragniemy umożliwić uczniom i nauczycielom efektywniejsze wykorzystanie czasu pracy
@@ -20,5 +20,10 @@ poszczególnych pracowniach.
 Dodatkowo pragniemy wprowadzić funkcję monitorowania temperatury. Czujnik temperatury
 będzie sprawdzał temperaturę w pracowni, a nauczyciel otrzyma powiadomienie o
 ewentualnej konieczności otwarcia okna lub dogrzania pomieszczenia.
+
+Postęp prac:
+https://docs.google.com/document/d/1DTOgLaFAJl0rpvpF-RSi43tJjG2pbMqJ16s5GSfCx40/edit?usp=sharing
+Pierwszy etap:
+https://drive.google.com/open?id=0B3-cN-AMR61bVlhrcTVVUDYtQy1sZTVfM0JLc1l4aFZGVG5z
 
 Zespół ProtoSec, ZS3 Łuków
