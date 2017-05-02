@@ -1,1 +1,105 @@
 
+//RFID + trzeba dopisać kod do dalmierza (obeszło się bez ściągania biblioteki ^^ )
+//===================kopia=====================
+#include <SoftwareSerial.h>
+
+#define RFIDEnablePin 2 //Pin that enables reading. Set as OUTPUT and LOW to read an RFID tag
+#define RFIDSerialRate 2400 //Parallax RFID Reader Serial Port Speed
+
+//Using SoftwareSerial Library to locate the serial pins off the default set
+//This allows the Arduino to be updated via USB with no conflict
+#define RxPin 5 //Pin to read data from Reader 
+#define TxPin 4 //Pin to write data to the Reader NOTE: The reader doesn't get written to, don't connect this line.
+SoftwareSerial RFIDReader(RxPin,TxPin);
+
+String RFIDTAG=""; //Holds the RFID Code read from a tag
+String DisplayTAG = ""; //Holds the last displayed RFID Tag
+//===================kopia=====================
+
+int i=0;
+int const osobywklasie(35);
+int licznik = 0; //Pokazuje ile jest potwierdzonych uczniów w klasie.
+bool dalmierzpass = false; //zmienia się na true gdy uczeń przechodzi przez dalmierz
+bool kartapass = false; //zmienia się na true gdy uczeń skanuje kartę RFID
+int liczdal = 0; //licznik osób policzonych dalmierzem.
+int liczkart = 0; //licznik osób policzonych kartą.
+bool wlaczoneliczenie = true;
+String baza[osobywklasie];
+bool stoplicz= false; //wyłączenie liczenia przez nauczyciela
+
+void setup() {
+  RFIDReader.begin(RFIDSerialRate);
+  
+  pinMode(RFIDEnablePin,OUTPUT); 
+
+  
+  
+  
+}
+
+void loop() {
+
+  if(wlaczoneliczenie==true)
+  {
+    digitalWrite(RFIDEnablePin, LOW);
+    i=0;
+    while((i<=osobywklasie) || (stoplicz==true)) //dopuki nie zeskanuje wszystkich osób w klasie LUB nauczyciel nie wylaczy liczenia...
+    {
+     if(RFIDReader.available() > 0) // Jesli jest sygnał ...
+     {
+       kartapass=true;
+       ReadSerial(RFIDTAG); //narazie tylko czyta tag... nie wiem jak go zapisać w chmurze.
+       baza[i]=RFIDTAG; //dodaje tag do bazy
+       liczkart++; //dolicza ucznia jako jednostke.
+       delay(1300);
+       i++;
+       kartapass=false;
+       RFIDTAG=""; //czysci już zliczony tag
+      
+     }
+    }
+    stoplicz=false; //wylacza opcje stopu nauczyciela wymuszajacego zakonczenie petli (jesli liczenie mialoby sie odbyc ponownie)
+  }
+
+ 
+
+}
+
+void ReadSerial(String &ReadTagString)
+{
+  int bytesread = 0;
+  int  val = 0; 
+  char code[10];
+  String TagCode="";
+
+  if(RFIDReader.available() > 0) {          // If data available from reader 
+    if((val = RFIDReader.read()) == 10) {   // Check for header 
+      bytesread = 0; 
+      while(bytesread<10) {                 // Read 10 digit code 
+        if( RFIDReader.available() > 0) { 
+          val = RFIDReader.read(); 
+          if((val == 10)||(val == 13)) {   // If header or stop bytes before the 10 digit reading 
+            break;                         // Stop reading 
+          } 
+          code[bytesread] = val;           // Add the digit           
+          bytesread++;                     // Ready to read next digit  
+        } 
+      } 
+      if(bytesread == 10) {                // If 10 digit read is complete 
+
+        for(int x=0;x<10;x++)              //Copy the Chars to a String
+        {
+          TagCode += code[x];
+        }
+        ReadTagString = TagCode;          //Update the caller
+        while(RFIDReader.available() > 0) //Burn off any characters still in the buffer
+        {
+          RFIDReader.read();
+        } 
+
+      } 
+      bytesread = 0;
+      TagCode="";
+    } 
+  } 
+}
